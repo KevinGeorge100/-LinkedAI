@@ -504,35 +504,6 @@
 
                 saveAndRender();
                 renderPipelines();
-                
-                // Fire off background enrichment
-                enrichCompanies();
-            }
-
-            async function enrichCompanies() {
-                let enriched = false;
-                for (let i = 0; i < companies.length; i++) {
-                    const c = companies[i];
-                    if (!c.domain && !c.enrichFailed) {
-                        try {
-                            const res = await fetch(`https://autocomplete.clearbit.com/v1/companies/suggest?query=${encodeURIComponent(c.name)}`);
-                            const data = await res.json();
-                            if (data && data.length > 0 && data[0].domain) {
-                                c.domain = data[0].domain;
-                                enriched = true;
-                            } else {
-                                c.enrichFailed = true;
-                            }
-                        } catch(e) {
-                            c.enrichFailed = true;
-                        }
-                        // Sleep to avoid rate limiting
-                        await new Promise(r => setTimeout(r, 200));
-                    }
-                }
-                if (enriched) {
-                    saveAndRender();
-                }
             }
 
             function getSelectedTimeFilter() {
@@ -632,7 +603,7 @@
                 });
             }
 
-            async function addCompany() {
+            function addCompany() {
                 const name = companyNameInput.value.trim();
                 const id = companyIdInput.value.trim();
                 
@@ -641,32 +612,15 @@
                     return;
                 }
                 
-                const newCompany = {name, id};
-                
                 // Remove existing if same name
                 companies = companies.filter(c => c.name.toLowerCase() !== name.toLowerCase());
                 
-                companies.unshift(newCompany);
+                companies.unshift({name, id});
                 saveAndRender();
                 
                 companyNameInput.value = '';
                 companyIdInput.value = '';
                 companyNameInput.focus();
-
-                // Fetch logo domain in background
-                try {
-                    const response = await fetch(`https://autocomplete.clearbit.com/v1/companies/suggest?query=${encodeURIComponent(name)}`);
-                    const data = await response.json();
-                    if (data && data.length > 0 && data[0].domain) {
-                        newCompany.domain = data[0].domain;
-                        saveAndRender();
-                    } else {
-                        newCompany.enrichFailed = true;
-                    }
-                } catch (e) {
-                    console.error("Failed to fetch company logo domain", e);
-                    newCompany.enrichFailed = true;
-                }
             }
 
             function removeCompany(index) {
@@ -710,12 +664,8 @@
                     tag.className = `${baseClasses} ${colorClasses}`;
                     
                     const img = document.createElement('img');
-                    img.className = 'w-6 h-6 rounded bg-white object-contain border border-slate-700 shadow-sm flex-shrink-0';
-                    const fallbackUrl = `https://ui-avatars.com/api/?name=${encodeURIComponent(company.name)}&background=random&color=fff&rounded=true&bold=true`;
-                    img.src = company.domain ? `https://logo.clearbit.com/${company.domain}` : fallbackUrl;
-                    img.onerror = function() {
-                        if (this.src !== fallbackUrl) this.src = fallbackUrl;
-                    };
+                    img.className = 'w-6 h-6 rounded bg-white object-contain shadow-sm flex-shrink-0';
+                    img.src = `https://ui-avatars.com/api/?name=${encodeURIComponent(company.name)}&background=random&color=fff&rounded=true&bold=true&length=1`;
                     
                     const infoDiv = document.createElement('div');
                     infoDiv.className = 'flex flex-col cursor-pointer';
