@@ -61,6 +61,19 @@
                 </h1>
                 <p class="text-slate-400 mt-2 text-sm">AI-Powered Job Scraper & Automation Pipeline</p>
             </div>
+            
+            <!-- Bookmarklet Button -->
+            <div class="flex items-center gap-3">
+                <div class="text-right hidden sm:block text-xs text-slate-400 mr-2">
+                    Drag this button to your<br>bookmarks bar &rarr;
+                </div>
+                <a href="javascript:(function(){var name=document.title.split(' | ')[0].split(' on LinkedIn')[0].trim();var id='';var urlParams=new URLSearchParams(window.location.search);if(urlParams.has('f_C')){id=urlParams.get('f_C').split(',')[0];}else{var match=document.documentElement.innerHTML.match(/urn:li:organization:(\d+)/);if(match){id=match[1];}else{var fsMatch=document.documentElement.innerHTML.match(/urn:li:fs_miniCompany:(\d+)/);if(fsMatch){id=fsMatch[1];}}}if(!id){alert('Could not find Company ID on this page. Try clicking the %22Jobs%22 tab first!');return;}window.open('https://kevingeorge100.github.io/-LinkedAI/?addName='+encodeURIComponent(name)+'&addId='+encodeURIComponent(id),'_blank');})();" 
+                   class="bg-blue-600/20 hover:bg-blue-600/40 border border-blue-500/50 text-blue-300 font-semibold py-2 px-4 rounded-lg flex items-center gap-2 cursor-grab active:cursor-grabbing transition-colors shadow-[0_0_15px_rgba(37,99,235,0.2)]"
+                   title="Drag me to your bookmarks bar!">
+                   <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13.828 10.172a4 4 0 00-5.656 0l-4 4a4 4 0 105.656 5.656l1.102-1.101m-.758-4.899a4 4 0 005.656 0l4-4a4 4 0 00-5.656-5.656l-1.1 1.1"></path></svg>
+                   Send to LinkedAI
+                </a>
+            </div>
         </header>
 
         <div class="grid grid-cols-1 lg:grid-cols-12 gap-8">
@@ -287,6 +300,22 @@
                     }
                 } else {
                     companies = JSON.parse(JSON.stringify(DEFAULT_COMPANIES));
+                }
+                
+                // Bookmarklet Receiver Logic
+                const urlParams = new URLSearchParams(window.location.search);
+                const addName = urlParams.get('addName');
+                const addId = urlParams.get('addId');
+                
+                if (addName && addId) {
+                    // Remove if already exists to avoid duplicates
+                    companies = companies.filter(c => c.id !== addId && c.name.toLowerCase() !== addName.toLowerCase());
+                    companies.unshift({name: addName, id: addId});
+                    
+                    // Clean URL
+                    window.history.replaceState({}, document.title, window.location.pathname);
+                    
+                    setTimeout(() => alert(`Successfully beamed in: ${addName}`), 300);
                 }
                 
                 // Add event listeners
