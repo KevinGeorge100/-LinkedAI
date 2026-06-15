@@ -120,6 +120,18 @@
                         </div>
                     </div>
                 </div>
+
+                <!-- Saved Pipelines -->
+                <div class="glass-panel rounded-2xl p-6 shadow-xl relative overflow-hidden flex flex-col min-h-[200px]">
+                    <div class="absolute top-0 left-0 w-full h-1 bg-gradient-to-r from-purple-500 to-pink-500"></div>
+                    <h2 class="text-lg font-semibold text-white mb-4 flex items-center gap-2">
+                        <svg class="w-5 h-5 text-purple-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 5a2 2 0 012-2h10a2 2 0 012 2v16l-7-3.5L5 21V5z"></path></svg>
+                        Saved Searches
+                    </h2>
+                    <div id="savedPipelinesContainer" class="space-y-3 overflow-y-auto flex-grow pr-2">
+                        <!-- Saved searches injected here -->
+                    </div>
+                </div>
             </div>
 
             <!-- Right Column: Inventory & Output -->
@@ -131,7 +143,10 @@
                             <svg class="w-5 h-5 text-indigo-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2M5 11V9a2 2 0 002-2m0 0V5a2 2 0 012-2h6a2 2 0 012 2v2M7 7h10"></path></svg>
                             Mapped Companies (<span id="companyCount">0</span>)
                         </h2>
-                        <button id="clearAllBtn" class="text-xs text-slate-400 hover:text-red-400 transition-colors">Clear All</button>
+                        <div class="flex items-center gap-4">
+                            <button id="savePipelineBtn" class="text-xs text-purple-400 hover:text-purple-300 font-semibold transition-colors flex items-center gap-1"><svg class="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7H5a2 2 0 00-2 2v9a2 2 0 002 2h14a2 2 0 002-2V9a2 2 0 00-2-2h-3m-1 4l-3 3m0 0l-3-3m3 3V4"></path></svg> Save Search</button>
+                            <button id="clearAllBtn" class="text-xs text-slate-400 hover:text-red-400 transition-colors">Clear All</button>
+                        </div>
                     </div>
                     
                     <div id="tagsContainer" class="flex flex-wrap gap-3 flex-grow content-start">
@@ -234,6 +249,8 @@
             const tagsContainer = document.getElementById('tagsContainer');
             const companyCount = document.getElementById('companyCount');
             const clearAllBtn = document.getElementById('clearAllBtn');
+            const savePipelineBtn = document.getElementById('savePipelineBtn');
+            const savedPipelinesContainer = document.getElementById('savedPipelinesContainer');
             
             const intentInput = document.getElementById('intentInput');
             const locationInput = document.getElementById('locationInput');
@@ -247,9 +264,20 @@
 
             // State
             let companies = [];
+            let savedPipelines = [];
+            const PIPELINES_STORAGE_KEY = 'job_scraper_saved_pipelines_v1';
 
             // Initialize
             function init() {
+                const storedPipelines = localStorage.getItem(PIPELINES_STORAGE_KEY);
+                if (storedPipelines) {
+                    try {
+                        savedPipelines = JSON.parse(storedPipelines);
+                    } catch(e) {
+                        savedPipelines = [];
+                    }
+                }
+
                 const stored = localStorage.getItem(STORAGE_KEY);
                 if (stored) {
                     try {
@@ -271,11 +299,13 @@
                 addCompanyBtn.addEventListener('click', addCompany);
                 
                 clearAllBtn.addEventListener('click', () => {
-                    if(confirm("Clear all companies?")) {
+                    if(confirm("Clear all mapped companies?")) {
                         companies = [];
                         saveAndRender();
                     }
                 });
+                
+                savePipelineBtn.addEventListener('click', saveCurrentPipeline);
                 
                 [intentInput, locationInput].forEach(el => {
                     el.addEventListener('input', updatePreviews);
@@ -289,6 +319,104 @@
                 btnGoogle.addEventListener('click', launchGoogle);
 
                 saveAndRender();
+                renderPipelines();
+            }
+
+            function getSelectedTimeFilter() {
+                for (const radio of timeFilters) {
+                    if (radio.checked) return radio.value;
+                }
+                return '';
+            }
+
+            function saveCurrentPipeline() {
+                if (companies.length === 0) {
+                    alert("Please add some companies before saving a search.");
+                    return;
+                }
+                
+                const name = prompt("Enter a name for this saved search (e.g. 'YC S24 Batch'):");
+                if (!name) return;
+
+                const newPipeline = {
+                    id: Date.now().toString(),
+                    name: name,
+                    intent: intentInput.value,
+                    location: locationInput.value,
+                    timeFilter: getSelectedTimeFilter(),
+                    companies: JSON.parse(JSON.stringify(companies)) // deep copy
+                };
+
+                savedPipelines.push(newPipeline);
+                localStorage.setItem(PIPELINES_STORAGE_KEY, JSON.stringify(savedPipelines));
+                renderPipelines();
+            }
+
+            function loadPipeline(id) {
+                const p = savedPipelines.find(x => x.id === id);
+                if (!p) return;
+                
+                intentInput.value = p.intent;
+                locationInput.value = p.location;
+                
+                Array.from(timeFilters).forEach(radio => {
+                    radio.checked = (radio.value === p.timeFilter);
+                });
+
+                companies = JSON.parse(JSON.stringify(p.companies));
+                saveAndRender();
+            }
+
+            function deletePipeline(id, e) {
+                e.stopPropagation();
+                if (confirm("Delete this saved search?")) {
+                    savedPipelines = savedPipelines.filter(x => x.id !== id);
+                    localStorage.setItem(PIPELINES_STORAGE_KEY, JSON.stringify(savedPipelines));
+                    renderPipelines();
+                }
+            }
+
+            function renderPipelines() {
+                savedPipelinesContainer.innerHTML = '';
+                if (savedPipelines.length === 0) {
+                    savedPipelinesContainer.innerHTML = '<div class="text-slate-500 text-sm italic w-full text-center mt-6">No saved searches yet.</div>';
+                    return;
+                }
+
+                savedPipelines.forEach(p => {
+                    const el = document.createElement('div');
+                    el.className = 'group bg-slate-800 border border-slate-700 hover:border-purple-500/50 rounded-lg p-3 transition-colors cursor-pointer flex justify-between items-center shadow-sm';
+                    el.onclick = () => loadPipeline(p.id);
+                    
+                    const leftDiv = document.createElement('div');
+                    leftDiv.innerHTML = `
+                        <div class="text-sm font-semibold text-slate-200 group-hover:text-purple-400 transition-colors">${p.name}</div>
+                        <div class="text-[10px] text-slate-400 uppercase tracking-wide mt-1">${p.companies.length} Companies • Role: ${p.intent || 'Any'}</div>
+                    `;
+                    
+                    const rightDiv = document.createElement('div');
+                    rightDiv.className = 'flex gap-2 opacity-0 group-hover:opacity-100 transition-opacity';
+                    
+                    const delBtn = document.createElement('button');
+                    delBtn.className = 'text-slate-500 hover:text-red-400 p-1 rounded transition-colors';
+                    delBtn.innerHTML = '<svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"></path></svg>';
+                    delBtn.onclick = (e) => deletePipeline(p.id, e);
+                    
+                    const loadBtn = document.createElement('button');
+                    loadBtn.className = 'text-purple-400 bg-purple-400/10 hover:bg-purple-400/20 p-1.5 rounded-md transition-colors font-medium text-xs flex items-center gap-1';
+                    loadBtn.innerHTML = '<svg class="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-8l-4-4m0 0L8 8m4-4v12"></path></svg> Load';
+                    loadBtn.onclick = (e) => {
+                        e.stopPropagation();
+                        loadPipeline(p.id);
+                    };
+
+                    rightDiv.appendChild(delBtn);
+                    rightDiv.appendChild(loadBtn);
+                    
+                    el.appendChild(leftDiv);
+                    el.appendChild(rightDiv);
+                    savedPipelinesContainer.appendChild(el);
+                });
             }
 
             function addCompany() {
@@ -430,13 +558,7 @@
                 
                 const params = getLinkedinParams();
                 const location = locationInput.value.trim();
-                let timeFilterValue = '';
-                for (const radio of timeFilters) {
-                    if (radio.checked) {
-                        timeFilterValue = radio.value;
-                        break;
-                    }
-                }
+                const timeFilterValue = getSelectedTimeFilter();
 
                 const url = new URL('https://www.linkedin.com/jobs/search/');
                 url.searchParams.set('keywords', params.keywords);
