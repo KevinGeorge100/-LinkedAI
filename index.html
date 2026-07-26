@@ -1003,25 +1003,94 @@
     const OUTREACH_KEY          = 'linkedai_outreach_v1';
     const RESUMES_KEY           = 'linkedai_resumes_v1';
 
-    // ============ SEED DATABASE ============
+    // ============ SEED DATABASE — INDIA HIGH-GROWTH TECH & YC STARTUPS ============
     const DEFAULT_COMPANIES = [
-        {name:"ArGo Intern",id:"309694"},{name:"Weekday AI (YC W21)",id:"109068754"},{name:"Weekday (YC W21)",id:"9291107"},
-        {name:"Atlassian",id:"79494516"},{name:"Airbnb",id:"13237948"},{name:"Appbrew",id:"69656080"},
-        {name:"American Express Global Business Travel",id:"111507978"},{name:"Clinikally (YC S22)",id:"13616753"},
-        {name:"JPMorganChase",id:"91421969"},{name:"CashKaro.com",id:"28154426"},{name:"Cashfree Payments",id:"13367357"},
-        {name:"CoinDCX",id:"74489557"},{name:"Cars24",id:"3579211"},{name:"CareStack™",id:"80478520"},
-        {name:"ClickPost",id:"10429660"},{name:"Razorpay Curlec",id:"13330722"},{name:"CRED",id:"78697226"},
-        {name:"Chatwoot",id:"18125"},{name:"Cvent",id:"13183020"},{name:"Convin",id:"99126095"},
-        {name:"Cloudely, Inc",id:"14485479"},{name:"Care.fi",id:"3157038"},{name:"Cinder",id:"18073149"},
-        {name:"Cube",id:"30241839"},{name:"Cleve.ai",id:"1068"},{name:"Peakflo (YC W22)",id:"101366370"},
-        {name:"Anakin (YC S21)",id:"40909299"},{name:"SuperKalam (YC W23)",id:"30944740"},
-        {name:"Open (YC W24)",id:"101719175"},{name:"Bolna (YC F25)",id:"95767874"},
-        {name:"winfunc (YC S24)",id:"105340324"},{name:"Hemut (YC X25)",id:"72596476"},
-        {name:"Human Archive (YC W26)",id:"111553402"},{name:"Gooseworks (YC W23)",id:"100253834"},
-        {name:"Yocket",id:"109068754"},{name:"Yellow.ai",id:"13184652"},{name:"SwiftSku (YC W21)",id:"79632789"},
-        {name:"Exly (YC W19)",id:"3882691"},{name:"UST",id:"222111"},{name:"Quest Global",id:"12770"},
-        {name:"Goldman Sachs",id:"1382"},{name:"Sprinto",id:"31215334"},{name:"slice",id:"2934"},
-        {name:"Stripe",id:"2135371"},{name:"Dodo Payments",id:"30246063"},{name:"S&P Global",id:"102043293"}
+        // --- High-Growth YC & Surge/Peak XV Backed AI & Tech (India) ---
+        {name:"ArGo Intern",id:"309694"},
+        {name:"Weekday AI (YC W21)",id:"109068754"},
+        {name:"Weekday (YC W21)",id:"9291107"},
+        {name:"Sarvam AI (Peak XV)",id:"100588665"},
+        {name:"Krutrim AI (Ola)",id:"100806499"},
+        {name:"Bolna AI (YC F25)",id:"95767874"},
+        {name:"Human Archive (YC W26)",id:"111553402"},
+        {name:"Gooseworks (YC W23)",id:"100253834"},
+        {name:"Hemut (YC X25)",id:"72596476"},
+        {name:"winfunc (YC S24)",id:"105340324"},
+        {name:"SuperKalam (YC W23)",id:"30944740"},
+        {name:"Anakin AI (YC S21)",id:"40909299"},
+        {name:"Open (YC W24)",id:"101719175"},
+        {name:"Peakflo (YC W22)",id:"101366370"},
+        {name:"Clinikally (YC S22)",id:"13616753"},
+        {name:"SwiftSku (YC W21)",id:"79632789"},
+        {name:"Exly (YC W19)",id:"3882691"},
+        {name:"Dodo Payments (YC S23)",id:"30246063"},
+
+        // --- Major Indian Tech Unicorns & High-Funded Leaders ---
+        {name:"Postman",id:"10087094"},
+        {name:"BrowserStack",id:"2592534"},
+        {name:"Hasura",id:"13410710"},
+        {name:"Razorpay Curlec",id:"13330722"},
+        {name:"CRED",id:"78697226"},
+        {name:"Zepto",id:"77626999"},
+        {name:"Swiggy",id:"5308697"},
+        {name:"Zomato",id:"1537233"},
+        {name:"PhonePe",id:"10384462"},
+        {name:"Blinkit",id:"3514213"},
+        {name:"Urban Company",id:"5241088"},
+        {name:"InVideo",id:"18529241"},
+        {name:"Pocket FM",id:"14562411"},
+        {name:"Physics Wallah",id:"75003502"},
+        {name:"Groww",id:"18320491"},
+        {name:"OneCard",id:"20165972"},
+        {name:"Jar",id:"73872297"},
+        {name:"Fi Money",id:"14704381"},
+        {name:"Jupiter Money",id:"14605556"},
+        {name:"Cashfree Payments",id:"13367357"},
+        {name:"CoinDCX",id:"74489557"},
+        {name:"Cars24",id:"3579211"},
+        {name:"Spinny",id:"10359872"},
+        {name:"Rapido",id:"10243468"},
+        {name:"BluSmart",id:"18868478"},
+        {name:"Ather Energy",id:"3539824"},
+        {name:"Ola Electric",id:"13459147"},
+        {name:"Porter",id:"9380252"},
+        {name:"Shadowfax",id:"10078028"},
+        {name:"Shiprocket",id:"13264101"},
+        {name:"Delhivery",id:"2487441"},
+        {name:"Udaan",id:"13217435"},
+        {name:"Zetwerk",id:"18420138"},
+        {name:"Moglix",id:"10091807"},
+        {name:"Infra.Market",id:"13271701"},
+        {name:"OfBusiness",id:"10204780"},
+        {name:"Chargebee",id:"2618956"},
+        {name:"Freshworks",id:"2262791"},
+        {name:"Darwinbox",id:"10214641"},
+        {name:"Whatfix",id:"3624838"},
+        {name:"LeadSquared",id:"2770248"},
+        {name:"CleverTap",id:"3276686"},
+        {name:"MoEngage",id:"3790575"},
+        {name:"Sprinto",id:"31215334"},
+        {name:"SpotDraft",id:"18037305"},
+        {name:"Plum Insurance",id:"64585141"},
+        {name:"Licious",id:"10101569"},
+        {name:"CashKaro.com",id:"28154426"},
+        {name:"CareStack™",id:"80478520"},
+        {name:"ClickPost",id:"10429660"},
+        {name:"Chatwoot",id:"18125"},
+        {name:"Cvent",id:"13183020"},
+        {name:"Convin",id:"99126095"},
+        {name:"Yocket",id:"109068754"},
+        {name:"Yellow.ai",id:"13184652"},
+        {name:"Appbrew",id:"69656080"},
+        {name:"slice",id:"2934"},
+        {name:"Stripe",id:"2135371"},
+        {name:"Atlassian",id:"79494516"},
+        {name:"Airbnb",id:"13237948"},
+        {name:"JPMorganChase",id:"91421969"},
+        {name:"Goldman Sachs",id:"1382"},
+        {name:"UST",id:"222111"},
+        {name:"Quest Global",id:"12770"},
+        {name:"S&P Global",id:"102043293"}
     ];
 
     // ============ YC COMPANY LIBRARY ============
@@ -1207,7 +1276,18 @@
         try { savedPipelines = JSON.parse(localStorage.getItem(PIPELINES_STORAGE_KEY) || '[]'); } catch(e) { savedPipelines = []; }
         try {
             const stored = localStorage.getItem(STORAGE_KEY);
-            companies = stored ? JSON.parse(stored) : JSON.parse(JSON.stringify(DEFAULT_COMPANIES));
+            if (stored) {
+                companies = JSON.parse(stored);
+                // Auto-merge new seed companies
+                const existingNames = new Set(companies.map(c => c.name.toLowerCase()));
+                DEFAULT_COMPANIES.forEach(defCo => {
+                    if (!existingNames.has(defCo.name.toLowerCase())) {
+                        companies.push({...defCo});
+                    }
+                });
+            } else {
+                companies = JSON.parse(JSON.stringify(DEFAULT_COMPANIES));
+            }
         } catch(e) { companies = JSON.parse(JSON.stringify(DEFAULT_COMPANIES)); }
         try { applications = JSON.parse(localStorage.getItem(APPLICATIONS_KEY) || '[]'); } catch(e) { applications = []; }
         try { outreachList = JSON.parse(localStorage.getItem(OUTREACH_KEY) || '[]'); } catch(e) { outreachList = []; }
