@@ -423,10 +423,58 @@
         .gap-2{gap:var(--space-2)} .gap-3{gap:var(--space-3)} .gap-4{gap:var(--space-4)} .flex-1{flex:1} .min-w-0{min-width:0} .w-full{width:100%} .truncate{white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
         .sr-only{position:absolute;width:1px;height:1px;padding:0;margin:-1px;overflow:hidden;clip:rect(0,0,0,0);border:0} .hidden{display:none!important}
 
-        /* ============ RESPONSIVE ============ */
-        @media (max-width:1024px) { .grid-4{grid-template-columns:repeat(2,1fr)} .grid-col-7-5{grid-template-columns:1fr} .grid-col-6-6{grid-template-columns:1fr} }
-        @media (max-width:768px) { .app-sidebar{display:none} .mobile-header{display:flex} .app-header{display:none} .grid-4{grid-template-columns:1fr 1fr} .grid-2{grid-template-columns:1fr} .content-area{padding:var(--space-4)} .command-trigger{display:none} }
-        @media (max-width:480px) { .grid-4{grid-template-columns:1fr} }
+        /* ============ RESPONSIVE MEDIA QUERIES (ANDROID & LAPTOP) ============ */
+        /* Table overflow container */
+        .table-responsive { width: 100%; overflow-x: auto; -webkit-overflow-scrolling: touch; }
+
+        @media (max-width: 1280px) {
+            .grid-4 { grid-template-columns: repeat(2, 1fr); }
+            .grid-col-7-5 { grid-template-columns: 1fr; }
+        }
+
+        @media (max-width: 1024px) {
+            .grid-col-6-6 { grid-template-columns: 1fr; }
+            .kanban-col { min-width: 180px; width: 180px; }
+        }
+
+        @media (max-width: 768px) {
+            /* Mobile & Android Layout */
+            .app-sidebar   { display: none !important; }
+            .mobile-header { display: flex !important; }
+            .app-header    { display: none !important; }
+            
+            .content-area  { padding: var(--space-3); gap: var(--space-4); }
+            .grid-4        { grid-template-columns: 1fr 1fr; gap: var(--space-3); }
+            .grid-2        { grid-template-columns: 1fr; gap: var(--space-3); }
+            .command-trigger { display: none; }
+
+            /* Touch targets for Android/iOS */
+            .btn { min-height: 38px; }
+            .chip { min-height: 32px; padding: 6px 10px; display: inline-flex; align-items: center; }
+            .nav-item { min-height: 42px; }
+
+            /* Kanban touch scrolling */
+            .kanban-board { width: 100vw; margin-left: calc(-1 * var(--space-3)); margin-right: calc(-1 * var(--space-3)); padding: 0 var(--space-3) var(--space-4); -webkit-overflow-scrolling: touch; }
+            .kanban-col   { min-width: 220px; width: 220px; }
+
+            /* Modals on Android */
+            .modal-overlay { padding: var(--space-3); align-items: center; }
+            .form-modal-content, .command-palette { max-height: 88vh; display: flex; flex-direction: column; overflow-y: auto; }
+            .form-modal-body { overflow-y: auto; flex: 1; }
+
+            /* Toast container on mobile */
+            #toastContainer { left: var(--space-4); right: var(--space-4); bottom: var(--space-4); }
+            .toast { max-width: 100%; width: 100%; }
+        }
+
+        @media (max-width: 480px) {
+            /* Compact Android screens (< 480px) */
+            .grid-4 { grid-template-columns: 1fr; }
+            .card-pad { padding: var(--space-4); }
+            .card-header { flex-direction: column; align-items: flex-start; gap: var(--space-2); }
+            .company-grid { grid-template-columns: 1fr; }
+            .yc-grid { grid-template-columns: repeat(auto-fill, minmax(140px, 1fr)); }
+        }
     </style>
 </head>
 <body>
@@ -1481,7 +1529,10 @@
                     </div></td>`;
                 tbody.appendChild(tr);
             });
-            container.appendChild(table);
+            const wrap = document.createElement('div');
+            wrap.className = 'table-responsive';
+            wrap.appendChild(table);
+            container.appendChild(wrap);
         } else {
             const grid = document.createElement('div');
             grid.className = 'company-grid';
@@ -1718,7 +1769,10 @@
                 <td class="td-actions"><button onclick="removeOutreach('${entry.id}')" class="btn btn-danger btn-icon" aria-label="Remove outreach"><svg width="13" height="13" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/></svg></button></td>`;
             tbody.appendChild(tr);
         });
-        container.innerHTML = ''; container.appendChild(table);
+        const wrap = document.createElement('div');
+        wrap.className = 'table-responsive';
+        wrap.appendChild(table);
+        container.innerHTML = ''; container.appendChild(wrap);
     }
 
     // ============ OVERVIEW STATS ============
