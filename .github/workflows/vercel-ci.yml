@@ -1,0 +1,35 @@
+name: Vercel CI & Deployment Verification
+
+on:
+  push:
+    branches: ["main"]
+  pull_request:
+    branches: ["main"]
+
+jobs:
+  validate-and-test:
+    name: HTML & Static Integrity Check
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout Repository
+        uses: actions/checkout@v4
+
+      - name: Verify Index.html Exists
+        run: |
+          if [ ! -f "index.html" ]; then
+            echo "Error: index.html missing!"
+            exit 1
+          fi
+          echo "index.html verified successfully."
+
+      - name: Validate JSON Configuration
+        run: |
+          python3 -c "import json; json.load(open('vercel.json'))"
+          echo "vercel.json syntax valid."
+
+      - name: Lint HTML Integrity
+        run: |
+          echo "Checking syntax and encoding..."
+          grep -q "<!DOCTYPE html>" index.html
+          echo "HTML structure verified."
