@@ -15,6 +15,7 @@
     <link
         href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@500;600;700;800&family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap"
         rel="stylesheet">
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
     <style>
         /* ============================================================
            DESIGN SYSTEM — ULTRA-CLEAN WHITE & ELECTRIC EMERALD
@@ -3307,8 +3308,56 @@
                 </div>
             </section>
 
-            <!-- ============ MODULE: SETTINGS ============ -->
-            <section id="module-settings" class="module" aria-label="Settings and backup">
+                <!-- Supabase Cloud Database Sync -->
+                <div class="card card-pad" style="display:flex;flex-direction:column;gap:var(--space-5);">
+                    <div style="display:flex;align-items:center;justify-content:space-between;gap:var(--space-4);flex-wrap:wrap;">
+                        <div>
+                            <div class="card-title" style="display:flex;align-items:center;gap:var(--space-2);">
+                                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#00c853"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z"/></svg>
+                                Supabase Lifetime Free Cloud Sync
+                            </div>
+                            <div class="card-desc">Connect your free Supabase PostgreSQL project for multi-device real-time cloud sync</div>
+                        </div>
+                        <span id="supabaseStatusBadge" class="badge badge-warning">Offline Mode (Local Storage)</span>
+                    </div>
+                    <div class="divider"></div>
+                    <div style="display:grid;grid-template-columns:1fr 1fr;gap:var(--space-4);">
+                        <div class="field-group">
+                            <label class="field-label">Supabase Project URL</label>
+                            <input type="url" id="supabaseUrlInput" class="field-input mono" placeholder="https://your-project.supabase.co">
+                        </div>
+                        <div class="field-group">
+                            <label class="field-label">Supabase Anon Public Key</label>
+                            <input type="password" id="supabaseKeyInput" class="field-input mono" placeholder="eyJhY... (anon public key)">
+                        </div>
+                    </div>
+                    <div style="display:flex;gap:var(--space-3);flex-wrap:wrap;align-items:center;">
+                        <button onclick="connectSupabaseCloud()" class="btn btn-success" aria-label="Connect Supabase">
+                            ⚡ Save &amp; Connect Cloud Sync
+                        </button>
+                        <button onclick="syncPushToSupabase()" class="btn btn-secondary" aria-label="Push to Cloud">
+                            ⬆️ Push Local to Cloud
+                        </button>
+                        <button onclick="syncPullFromSupabase()" class="btn btn-secondary" aria-label="Pull from Cloud">
+                            ⬇️ Pull Cloud to Local
+                        </button>
+                        <button onclick="disconnectSupabaseCloud()" class="btn btn-danger" aria-label="Disconnect Cloud">
+                            Disconnect Cloud
+                        </button>
+                    </div>
+                    <details style="font-size:var(--text-xs);color:var(--text-muted);line-height:1.6;background:var(--bg-elevated);padding:var(--space-3) var(--space-4);border-radius:var(--radius-lg);border:1px solid var(--border-base);">
+                        <summary style="font-weight:700;cursor:pointer;color:var(--text-secondary);">📖 1-Minute Free Supabase Setup Guide</summary>
+                        <ol style="margin-top:var(--space-2);padding-left:18px;display:flex;flex-direction:column;gap:4px;">
+                            <li>Create a free account at <strong>supabase.com</strong> (100% free, no credit card needed).</li>
+                            <li>Create a new project &amp; copy your <strong>Project URL</strong> and <strong>anon public key</strong> from <i>Project Settings -&gt; API</i>.</li>
+                            <li>In Supabase <i>SQL Editor</i>, run this 1-line script to create your workspace table:
+                                <div class="code-block" style="margin-top:4px;">create table if not exists linkedai_workspace (id text primary key, data jsonb, updated_at timestamp with time zone default now());</div>
+                            </li>
+                            <li>Paste your URL &amp; anon key above and click <strong>Save &amp; Connect Cloud Sync</strong>!</li>
+                        </ol>
+                    </details>
+                </div>
+
                 <!-- Data Management -->
                 <div class="card card-pad" style="display:flex;flex-direction:column;gap:var(--space-5);">
                     <div>
@@ -4008,6 +4057,11 @@
             renderOutreach();
             renderResumes();
             updateOverviewStats();
+
+            // Init Supabase Cloud & auto-pull cloud workspace
+            if (initSupabaseClient()) {
+                syncPullFromSupabase();
+            }
         });
 
         // ============ SEARCH BUILDER ============
@@ -4773,6 +4827,126 @@
                 } catch (err) { showToast('Invalid backup file format', 'error'); }
             };
             reader.readAsText(file);
+        }
+
+        // ============ SUPABASE CLOUD SYNC ENGINE ============
+        const SUPABASE_CONFIG_KEY = 'linkedai_supabase_config_v1';
+        let supabaseClient = null;
+
+        function getSupabaseConfig() {
+            try { return JSON.parse(localStorage.getItem(SUPABASE_CONFIG_KEY) || 'null'); } catch (e) { return null; }
+        }
+
+        function initSupabaseClient() {
+            const config = getSupabaseConfig();
+            const statusBadge = document.getElementById('supabaseStatusBadge');
+            const urlInput = document.getElementById('supabaseUrlInput');
+            const keyInput = document.getElementById('supabaseKeyInput');
+
+            if (config && config.url && config.key && window.supabase) {
+                if (urlInput) urlInput.value = config.url;
+                if (keyInput) keyInput.value = config.key;
+                try {
+                    supabaseClient = window.supabase.createClient(config.url, config.key);
+                    if (statusBadge) {
+                        statusBadge.className = 'badge badge-success';
+                        statusBadge.textContent = '⚡ Cloud Synced (Supabase)';
+                    }
+                    return true;
+                } catch (e) {
+                    if (statusBadge) {
+                        statusBadge.className = 'badge badge-error';
+                        statusBadge.textContent = 'Cloud Config Error';
+                    }
+                    return false;
+                }
+            } else {
+                if (statusBadge) {
+                    statusBadge.className = 'badge badge-warning';
+                    statusBadge.textContent = 'Offline Mode (Local Storage)';
+                }
+                supabaseClient = null;
+                return false;
+            }
+        }
+
+        async function connectSupabaseCloud() {
+            const url = document.getElementById('supabaseUrlInput').value.trim();
+            const key = document.getElementById('supabaseKeyInput').value.trim();
+            if (!url || !key) { showToast('Project URL and Anon Key are required', 'warning'); return; }
+
+            localStorage.setItem(SUPABASE_CONFIG_KEY, JSON.stringify({ url, key }));
+            const connected = initSupabaseClient();
+            if (connected) {
+                showToast('Connected to Supabase! Syncing workspace...', 'success');
+                await syncPushToSupabase();
+            } else {
+                showToast('Could not connect to Supabase client', 'error');
+            }
+        }
+
+        function disconnectSupabaseCloud() {
+            localStorage.removeItem(SUPABASE_CONFIG_KEY);
+            document.getElementById('supabaseUrlInput').value = '';
+            document.getElementById('supabaseKeyInput').value = '';
+            initSupabaseClient();
+            showToast('Disconnected from Supabase Cloud. Switched to Local Storage mode.', 'info');
+        }
+
+        async function syncPushToSupabase() {
+            if (!supabaseClient) return;
+            try {
+                const payload = {
+                    version: '3.0',
+                    timestamp: new Date().toISOString(),
+                    companies,
+                    applications,
+                    outreachList,
+                    resumes,
+                    savedPipelines
+                };
+                const { error } = await supabaseClient
+                    .from('linkedai_workspace')
+                    .upsert({ id: 'user_main_workspace', data: payload, updated_at: new Date().toISOString() });
+
+                if (error) {
+                    showToast(`Cloud Push Warning: ${error.message}`, 'warning');
+                } else {
+                    showToast('⚡ Workspace synced to Supabase Cloud!', 'success');
+                }
+            } catch (e) {
+                showToast(`Cloud Push Failed: ${e.message}`, 'error');
+            }
+        }
+
+        async function syncPullFromSupabase() {
+            if (!supabaseClient) return;
+            try {
+                const { data, error } = await supabaseClient
+                    .from('linkedai_workspace')
+                    .select('*')
+                    .eq('id', 'user_main_workspace')
+                    .single();
+
+                if (error && error.code !== 'PGRST116') {
+                    showToast(`Cloud Pull Warning: ${error.message}`, 'warning');
+                    return;
+                }
+                if (data && data.data) {
+                    const cloudData = data.data;
+                    if (cloudData.companies && Array.isArray(cloudData.companies)) companies = cloudData.companies;
+                    if (cloudData.applications && Array.isArray(cloudData.applications)) applications = cloudData.applications;
+                    if (cloudData.outreachList && Array.isArray(cloudData.outreachList)) outreachList = cloudData.outreachList;
+                    if (cloudData.resumes && Array.isArray(cloudData.resumes)) resumes = cloudData.resumes;
+                    if (cloudData.savedPipelines && Array.isArray(cloudData.savedPipelines)) savedPipelines = cloudData.savedPipelines;
+
+                    saveApplications(); saveOutreach(); saveResumes(); saveAndRender();
+                    renderPipelines(); renderKanban(); renderOutreach(); renderResumes(); updateOverviewStats();
+                    showToast('⚡ Workspace restored from Supabase Cloud!', 'success');
+                }
+            } catch (e) {
+                showToast(`Cloud Pull Failed: ${e.message}`, 'error');
+            }
         }
     </script>
 </body>
