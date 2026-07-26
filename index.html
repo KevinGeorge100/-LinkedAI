@@ -2426,22 +2426,41 @@
 
         @media (max-width: 768px) {
 
-            /* Mobile & Android Layout */
+            /* Mobile & Android Layout Fixes */
+            body {
+                flex-direction: column !important;
+                min-height: 100vh;
+                width: 100vw;
+                overflow-x: hidden;
+            }
+
             .app-sidebar {
                 display: none !important;
             }
 
             .mobile-header {
                 display: flex !important;
+                width: 100% !important;
+                position: sticky;
+                top: 0;
+                z-index: 50;
             }
 
             .app-header {
                 display: none !important;
             }
 
+            .app-main {
+                width: 100% !important;
+                height: auto !important;
+                min-height: calc(100vh - 56px);
+                overflow-x: hidden;
+            }
+
             .content-area {
                 padding: var(--space-3);
                 gap: var(--space-4);
+                width: 100%;
             }
 
             .grid-4 {
