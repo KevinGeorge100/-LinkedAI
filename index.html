@@ -3328,7 +3328,7 @@
                         </div>
                         <div class="field-group">
                             <label class="field-label">Supabase Anon Public Key</label>
-                            <input type="password" id="supabaseKeyInput" class="field-input mono" placeholder="eyJhY... (anon public key)">
+                            <input type="password" id="supabaseKeyInput" class="field-input mono" value="eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im5vcHJkaWlsaG53eWptYWhyd2hyIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODUwNjQ2MDUsImV4cCI6MjEwMDY0MDYwNX0.12HP4AS48IFVD7NlvejZ1j-OqzftWM8MxewIgvypXdA" placeholder="eyJhY... (anon public key)">
                         </div>
                     </div>
                     <div style="display:flex;gap:var(--space-3);flex-wrap:wrap;align-items:center;">
@@ -4831,10 +4831,16 @@
 
         // ============ SUPABASE CLOUD SYNC ENGINE ============
         const SUPABASE_CONFIG_KEY = 'linkedai_supabase_config_v1';
+        const DEFAULT_SUPABASE_URL = 'https://noprdiilhnwyjmahrwhr.supabase.co';
+        const DEFAULT_SUPABASE_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im5vcHJkaWlsaG53eWptYWhyd2hyIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODUwNjQ2MDUsImV4cCI6MjEwMDY0MDYwNX0.12HP4AS48IFVD7NlvejZ1j-OqzftWM8MxewIgvypXdA';
         let supabaseClient = null;
 
         function getSupabaseConfig() {
-            try { return JSON.parse(localStorage.getItem(SUPABASE_CONFIG_KEY) || 'null'); } catch (e) { return null; }
+            try {
+                const stored = JSON.parse(localStorage.getItem(SUPABASE_CONFIG_KEY) || 'null');
+                if (stored && stored.url && stored.key) return stored;
+            } catch (e) {}
+            return { url: DEFAULT_SUPABASE_URL, key: DEFAULT_SUPABASE_KEY };
         }
 
         function initSupabaseClient() {
