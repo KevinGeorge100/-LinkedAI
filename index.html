@@ -3581,9 +3581,30 @@
                 </div>
                 <div class="field-group"><label class="field-label">LinkedIn Company URL</label><input type="url"
                         id="detailUrl" class="field-input" placeholder="https://linkedin.com/company/..."></div>
-                <div class="field-group"><label class="field-label">Notes</label><textarea id="detailNotes"
+                <div class="field-group"><label class="field-label">Notes & Context</label><textarea id="detailNotes"
                         class="field-textarea"
-                        placeholder="Contacts, interview experiences, referral notes..."></textarea></div>
+                        placeholder="Interview process notes, referral details, salary expectations..."></textarea></div>
+
+                <div class="divider" style="margin:var(--space-2) 0;"></div>
+
+                <!-- HR & Recruiter Contacts Section -->
+                <div>
+                    <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:var(--space-3);">
+                        <span class="field-label" style="font-size:var(--text-sm);font-weight:700;">HR & Recruiter Contacts</span>
+                        <span style="font-size:11px;color:var(--text-muted)">Save emails, phone numbers & recruiters</span>
+                    </div>
+                    <div style="display:grid;grid-template-columns:1fr 1fr;gap:var(--space-3);margin-bottom:var(--space-3);">
+                        <input type="text" id="contactNameInput" class="field-input" placeholder="Contact Name (e.g. Priya Sharma)">
+                        <input type="text" id="contactRoleInput" class="field-input" placeholder="Role (e.g. HR Recruiter, EM)">
+                        <input type="email" id="contactEmailInput" class="field-input" placeholder="Email (priya@company.com)">
+                        <input type="text" id="contactPhoneInput" class="field-input" placeholder="Phone (+91 98765 43210)">
+                    </div>
+                    <button type="button" onclick="addContactToCurrentCompany()" class="btn btn-secondary btn-sm" style="width:100%;">
+                        <svg width="12" height="12" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"/></svg>
+                        Add HR Contact to Database
+                    </button>
+                    <div id="companyContactsList" style="display:flex;flex-direction:column;gap:var(--space-2);margin-top:var(--space-3);"></div>
+                </div>
             </div>
             <div class="form-modal-footer">
                 <button onclick="closeCompanyDetailsModal()" class="btn btn-secondary">Cancel</button>
@@ -4055,18 +4076,23 @@
             if (confirm('Clear all mapped companies from the database?')) { companies = []; saveAndRender(); showToast('Database cleared', 'warning'); }
         }
 
-        // ============ COMPANY CRM MODAL ============
+        // ============ COMPANY CRM & CONTACTS ENGINE ============
         function openCompanyDetails(index) {
             currentCompanyDetailsIndex = index;
             const co = companies[index];
+            if (!co.contacts) co.contacts = [];
             document.getElementById('companyDetailsTitle').textContent = co.name;
             document.getElementById('detailPriority').value = co.priority || '';
             document.getElementById('detailStatus').value = co.status || '';
             document.getElementById('detailUrl').value = co.url || '';
             document.getElementById('detailNotes').value = co.notes || '';
+            ['contactNameInput', 'contactRoleInput', 'contactEmailInput', 'contactPhoneInput'].forEach(id => { const el = document.getElementById(id); if (el) el.value = ''; });
+            renderCompanyContacts(co);
             document.getElementById('companyDetailsModal').classList.add('open');
         }
+
         function closeCompanyDetailsModal() { document.getElementById('companyDetailsModal').classList.remove('open'); currentCompanyDetailsIndex = null; }
+
         function saveCompanyDetails() {
             if (currentCompanyDetailsIndex === null) return;
             const co = companies[currentCompanyDetailsIndex];
@@ -4076,7 +4102,77 @@
             co.notes = document.getElementById('detailNotes').value.trim();
             saveAndRender();
             closeCompanyDetailsModal();
-            showToast('Company details saved', 'success');
+            showToast(`Saved CRM details for ${co.name}`, 'success');
+        }
+
+        function addContactToCurrentCompany() {
+            if (currentCompanyDetailsIndex === null) return;
+            const co = companies[currentCompanyDetailsIndex];
+            if (!co.contacts) co.contacts = [];
+
+            const name = document.getElementById('contactNameInput').value.trim();
+            const role = document.getElementById('contactRoleInput').value.trim();
+            const email = document.getElementById('contactEmailInput').value.trim();
+            const phone = document.getElementById('contactPhoneInput').value.trim();
+
+            if (!name && !email) { showToast('Please enter at least a contact name or email', 'warning'); return; }
+
+            co.contacts.push({ id: Date.now().toString(), name: name || 'HR Contact', role: role || 'Recruiter', email, phone });
+            saveAndRender();
+            ['contactNameInput', 'contactRoleInput', 'contactEmailInput', 'contactPhoneInput'].forEach(id => { const el = document.getElementById(id); if (el) el.value = ''; });
+            renderCompanyContacts(co);
+            showToast(`Added contact ${name} to ${co.name}`, 'success');
+        }
+
+        function removeContactFromCompany(cId) {
+            if (currentCompanyDetailsIndex === null) return;
+            const co = companies[currentCompanyDetailsIndex];
+            if (!co.contacts) return;
+            co.contacts = co.contacts.filter(c => c.id !== cId);
+            saveAndRender();
+            renderCompanyContacts(co);
+            showToast('Contact removed', 'info');
+        }
+
+        function quickLogOutreachToContact(cName, cRole, cEmail) {
+            if (currentCompanyDetailsIndex === null) return;
+            const co = companies[currentCompanyDetailsIndex];
+            closeCompanyDetailsModal();
+            openAddOutreachModal();
+            setTimeout(() => {
+                document.getElementById('outCompany').value = co.name;
+                document.getElementById('outContact').value = cName || '';
+                document.getElementById('outContactRole').value = cRole || '';
+                if (cEmail) document.getElementById('outNotes').value = `Direct HR Email: ${cEmail}`;
+            }, 150);
+        }
+
+        function renderCompanyContacts(co) {
+            const container = document.getElementById('companyContactsList');
+            if (!container) return;
+            if (!co.contacts || co.contacts.length === 0) {
+                container.innerHTML = `<div style="font-size:11px;color:var(--text-muted);text-align:center;padding:var(--space-3) 0;">No contacts saved for ${co.name} yet</div>`;
+                return;
+            }
+            container.innerHTML = co.contacts.map(c => `
+                <div style="background:var(--bg-elevated);border:1px solid var(--border-base);border-radius:var(--radius-lg);padding:var(--space-3);display:flex;align-items:center;justify-content:space-between;gap:var(--space-3);">
+                    <div style="min-width:0;flex:1;">
+                        <div style="display:flex;align-items:center;gap:var(--space-2);flex-wrap:wrap;">
+                            <span style="font-size:var(--text-sm);font-weight:700;color:var(--text-primary);">${c.name}</span>
+                            ${c.role ? `<span class="badge badge-neutral" style="font-size:9px;padding:1px 6px;">${c.role}</span>` : ''}
+                        </div>
+                        <div style="display:flex;gap:var(--space-3);flex-wrap:wrap;margin-top:4px;font-size:11px;color:var(--text-muted);font-family:var(--font-mono);">
+                            ${c.email ? `<span>✉️ ${c.email}</span>` : ''}
+                            ${c.phone ? `<span>📞 ${c.phone}</span>` : ''}
+                        </div>
+                    </div>
+                    <div style="display:flex;align-items:center;gap:4px;flex-shrink:0;">
+                        ${c.email ? `<button type="button" onclick="copyToClipboard('${c.email}')" class="btn btn-ghost btn-icon" title="Copy Email"><svg width="12" height="12" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 16H6a2 2 0 01-2-2V6a2 2 0 012-2h8a2 2 0 012 2v2m-6 12h8a2 2 0 002-2v-8a2 2 0 00-2-2h-8a2 2 0 00-2 2v8a2 2 0 002 2z"/></svg></button>` : ''}
+                        <button type="button" onclick="quickLogOutreachToContact('${c.name.replace(/'/g, "\\'")}', '${(c.role || '').replace(/'/g, "\\'")}', '${(c.email || '').replace(/'/g, "\\\'")}')" class="btn btn-success btn-sm" style="font-size:10px;padding:3px 8px;" title="Log Outreach">Log DM</button>
+                        <button type="button" onclick="removeContactFromCompany('${c.id}')" class="btn btn-danger btn-icon" title="Remove Contact"><svg width="12" height="12" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/></svg></button>
+                    </div>
+                </div>
+            `).join('');
         }
 
         // ============ SAVE & RENDER ============
@@ -4139,15 +4235,16 @@
                     const initials = company.name.slice(0, 2).toUpperCase();
                     const priorityBadge = company.priority ? `<span class="badge priority-${company.priority}">${company.priority === 'high' ? 'High' : company.priority === 'medium' ? 'Medium' : 'Watching'}</span>` : '<span style="color:var(--text-muted);font-size:10px;">—</span>';
                     const statusBadge = company.status ? `<span class="badge co-status-${company.status}">${company.status === 'hiring' ? 'Hiring' : 'Paused'}</span>` : '<span style="color:var(--text-muted);font-size:10px;">—</span>';
+                    const contactBadge = company.contacts && company.contacts.length > 0 ? `<span class="badge badge-purple" style="font-size:9px;padding:1px 5px;margin-top:2px;">👤 ${company.contacts.length} Contact${company.contacts.length > 1 ? 's' : ''}</span>` : '';
                     const tr = document.createElement('tr');
                     tr.innerHTML = `
-                    <td><div class="company-cell"><div class="company-avatar">${initials}</div><div class="min-w-0"><div class="company-name">${company.name}</div>${company.notes ? `<div style="font-size:10px;color:var(--text-muted);margin-top:2px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;max-width:160px;">${company.notes}</div>` : ''}</div></div></td>
+                    <td><div class="company-cell"><div class="company-avatar">${initials}</div><div class="min-w-0"><div class="company-name">${company.name}</div>${contactBadge || (company.notes ? `<div style="font-size:10px;color:var(--text-muted);margin-top:2px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;max-width:160px;">${company.notes}</div>` : '')}</div></div></td>
                     <td><input type="text" class="inline-input" value="${company.id}" placeholder="Add ID" onchange="updateInlineId(${idx}, this.value)" aria-label="LinkedIn ID for ${company.name}"></td>
                     <td>${priorityBadge}</td>
                     <td>${statusBadge}</td>
                     <td>${company.id ? '<span class="badge badge-success">Valid</span>' : '<span class="badge badge-warning">Needs ID</span>'}</td>
                     <td class="td-actions"><div style="display:inline-flex;gap:4px;">
-                        <button onclick="openCompanyDetails(${idx})" class="btn btn-ghost btn-icon" aria-label="Edit details for ${company.name}" title="Details & CRM"><svg width="13" height="13" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/></svg></button>
+                        <button onclick="openCompanyDetails(${idx})" class="btn btn-ghost btn-icon" aria-label="Edit details for ${company.name}" title="Details & HR Contacts CRM"><svg width="13" height="13" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/></svg></button>
                         ${company.id ? `<button onclick="copyToClipboard('${company.id}')" class="btn btn-ghost btn-icon" aria-label="Copy ID" title="Copy ID"><svg width="13" height="13" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 16H6a2 2 0 01-2-2V6a2 2 0 012-2h8a2 2 0 012 2v2m-6 12h8a2 2 0 002-2v-8a2 2 0 00-2-2h-8a2 2 0 00-2 2v8a2 2 0 002 2z"/></svg></button>` : ''}
                         <button onclick="removeCompany(${idx})" class="btn btn-danger btn-icon" aria-label="Remove ${company.name}" title="Remove"><svg width="13" height="13" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/></svg></button>
                     </div></td>`;
@@ -4171,8 +4268,9 @@
                         <div class="min-w-0">
                             <div class="company-name">${company.name}</div>
                             <div style="display:flex;gap:4px;flex-wrap:wrap;margin-top:3px;">
-                                ${company.id ? `<span class="badge badge-success">ID: ${company.id}</span>` : '<span class="badge badge-warning">Needs ID</span>'}
-                                ${company.priority ? `<span class="badge priority-${company.priority}">${company.priority}</span>` : ''}
+                                ${company.id ? `<span class="badge badge-success">ID: ${company.id}</span>' : '<span class="badge badge-warning">Needs ID</span>'}
+                                ${company.contacts && company.contacts.length > 0 ? `<span class="badge badge-purple">👤 ${company.contacts.length} Contact${company.contacts.length > 1 ? 's' : ''}</span>` : ''}
+                                ${company.priority ? `<span class="badge priority-${company.priority}">${company.priority}</span>' : ''}
                             </div>
                         </div>
                     </div>
