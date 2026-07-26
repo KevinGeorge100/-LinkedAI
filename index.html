@@ -1728,18 +1728,43 @@
         showToast(`Logged outreach to ${company}`, 'success');
     }
     function saveOutreach() { localStorage.setItem(OUTREACH_KEY, JSON.stringify(outreachList)); }
+
+    // ============ AUTOMATED OUTREACH ENGINE ============
+    function copySmartOutreachDM(id) {
+        const o = outreachList.find(x => x.id === id);
+        if (!o) return;
+        const recipient = o.contact ? o.contact.split(' ')[0] : 'Hiring Team';
+        const roleIntent = document.getElementById('intentInput')?.value.trim() || 'Software Engineer';
+        const message = `Hi ${recipient},\n\nI’ve been following ${o.company}’s tech updates and am really inspired by what your team is building. I’m currently exploring ${roleIntent} opportunities and would love to connect with your engineering team.\n\nWould you be open to a brief chat or connecting here?\n\nBest regards!`;
+        navigator.clipboard.writeText(message);
+        showToast(`Copied personalized cold DM for ${o.company}!`, 'success');
+    }
+
     function cycleOutreachStatus(id) {
         const entry = outreachList.find(o => o.id === id);
         if (!entry) return;
         const cycle = {sent:'replied', replied:'no_response', no_response:'sent'};
         entry.responseStatus = cycle[entry.responseStatus] || 'sent';
+        
+        // Automated Pipeline Sync: If outreach gets a reply, auto-promote to Interview stage!
+        if (entry.responseStatus === 'replied') {
+            const app = applications.find(a => a.company.toLowerCase() === entry.company.toLowerCase());
+            if (app && app.status !== 'interview' && app.status !== 'offer') {
+                app.status = 'interview';
+                saveApplications();
+                renderKanban();
+                showToast(`🎉 Auto-promoted ${entry.company} application to Interview stage!`, 'success');
+            }
+        }
         saveOutreach(); renderOutreach(); updateOverviewStats();
     }
+
     function removeOutreach(id) {
         outreachList = outreachList.filter(o => o.id !== id);
         saveOutreach(); renderOutreach(); updateOverviewStats();
         showToast('Outreach removed', 'info');
     }
+
     function renderOutreach() {
         const container = document.getElementById('outreachListContainer');
         if (!container) return;
@@ -1769,7 +1794,10 @@
                 <td><span class="method-badge method-${entry.method}">${methodLabels[entry.method]||entry.method}</span></td>
                 <td style="font-family:var(--font-mono);font-size:var(--text-xs);color:var(--text-muted)">${dateStr}</td>
                 <td><button onclick="cycleOutreachStatus('${entry.id}')" class="badge response-${entry.responseStatus}" title="Click to update status">${responseLabels[entry.responseStatus]}</button></td>
-                <td class="td-actions"><button onclick="removeOutreach('${entry.id}')" class="btn btn-danger btn-icon" aria-label="Remove outreach"><svg width="13" height="13" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/></svg></button></td>`;
+                <td class="td-actions"><div style="display:inline-flex;gap:4px;">
+                    <button onclick="copySmartOutreachDM('${entry.id}')" class="btn btn-ghost btn-icon" title="Copy Personalized Cold DM"><svg width="13" height="13" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 16H6a2 2 0 01-2-2V6a2 2 0 012-2h8a2 2 0 012 2v2m-6 12h8a2 2 0 002-2v-8a2 2 0 00-2-2h-8a2 2 0 00-2 2v8a2 2 0 002 2z"/></svg></button>
+                    <button onclick="removeOutreach('${entry.id}')" class="btn btn-danger btn-icon" aria-label="Remove outreach"><svg width="13" height="13" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/></svg></button>
+                </div></td>`;
             tbody.appendChild(tr);
         });
         const wrap = document.createElement('div');
