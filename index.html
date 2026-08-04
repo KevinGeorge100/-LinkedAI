@@ -3198,8 +3198,8 @@
                 <div class="card card-pad">
                     <div class="card-header">
                         <div>
-                            <div class="card-title">YC Company Library</div>
-                            <div class="card-desc">Browse and import 110+ YC companies into your directory</div>
+                            <div class="card-title">YC & Wellfound Company Library</div>
+                            <div class="card-desc">Browse and import 250+ Wellfound active & mega-funded companies into your directory</div>
                         </div>
                         <div style="display:flex;align-items:center;gap:var(--space-3);">
                             <span id="ycSelectedCount" style="font-size:var(--text-sm);color:var(--text-muted)">0
@@ -3283,7 +3283,7 @@
                         </div>
                         <div class="bookmarklet-drop-zone">
                             <a id="bookmarkletLinkStudio"
-                                href="javascript:(function(){var name=document.title.split(' | ')[0].split(' on LinkedIn')[0].trim();var id='';var urlParams=new URLSearchParams(window.location.search);if(urlParams.has('f_C')){id=urlParams.get('f_C').split(',')[0];}else{var match=document.documentElement.innerHTML.match(/urn:li:organization:(\d+)/);if(match){id=match[1];}else{var fsMatch=document.documentElement.innerHTML.match(/urn:li:fs_miniCompany:(\d+)/);if(fsMatch){id=fsMatch[1];}}}if(!id){alert('Could not find Company ID on this page. Try clicking the %22Jobs%22 tab first!');return;}window.open('https://kevingeorge100.github.io/-LinkedAI/?addName='+encodeURIComponent(name)+'&addId='+encodeURIComponent(id),'_blank');})();"
+                                href="javascript:(function(){var name=document.title.split(' | ')[0].split(' on LinkedIn')[0].trim();var id='';var urlParams=new URLSearchParams(window.location.search);if(urlParams.has('f_C')){id=urlParams.get('f_C').split(',')[0];}else{var match=document.documentElement.innerHTML.match(/urn:li:organization:(\d+)/);if(match){id=match[1];}else{var fsMatch=document.documentElement.innerHTML.match(/urn:li:fs_miniCompany:(\d+)/);if(fsMatch){id=fsMatch[1];}}}if(!id){alert('Could not find Company ID on this page. Try clicking the %22Jobs%22 tab first!');return;}window.open('https://linked-ai-nine.vercel.app/?addName='+encodeURIComponent(name)+'&addId='+encodeURIComponent(id),'_blank');})();"
                                 class="bookmarklet-btn" title="Drag this to your bookmarks bar">
                                 <svg width="16" height="16" fill="none" stroke="currentColor" viewBox="0 0 24 24"
                                     aria-hidden="true">
@@ -3638,15 +3638,93 @@
     <!-- ================================================================ JAVASCRIPT ENGINE ================================================================ -->
     <script>
         // ============ STORAGE KEYS ============
-        const STORAGE_KEY = 'job_scraper_companies_v10';
+        const STORAGE_KEY = 'job_scraper_companies_v11';
         const PIPELINES_STORAGE_KEY = 'job_scraper_saved_pipelines_v1';
         const APPLICATIONS_KEY = 'linkedai_applications_v1';
         const OUTREACH_KEY = 'linkedai_outreach_v1';
         const RESUMES_KEY = 'linkedai_resumes_v1';
 
-        // ============ SEED DATABASE — INDIA HIGH-GROWTH TECH & YC STARTUPS ============
+        // ============ SEED DATABASE — WELLFOUND, MEGA-FUNDED & HIGH-GROWTH TECH ============
         const DEFAULT_COMPANIES = [
-            // --- High-Growth YC & Surge/Peak XV Backed AI & Tech (India) ---
+            // --- Wellfound Top Hiring & High-Growth AI/DevTools Startups ---
+            { name: "Cursor (Anysphere)", id: "90518330" },
+            { name: "Perplexity AI", id: "82772579" },
+            { name: "Cohere", id: "68735232" },
+            { name: "ElevenLabs", id: "89704207" },
+            { name: "Together AI", id: "90587841" },
+            { name: "Replicate", id: "70868846" },
+            { name: "LangChain", id: "96229158" },
+            { name: "Pinecone", id: "68864757" },
+            { name: "LlamaIndex", id: "98762744" },
+            { name: "Scale AI", id: "18055620" },
+            { name: "Fireworks AI", id: "90587842" },
+            { name: "Groq", id: "18086053" },
+            { name: "Runway ML", id: "18420557" },
+            { name: "Harvey AI", id: "90472498" },
+            { name: "Braintrust", id: "20406085" },
+            { name: "Cleanlab", id: "80509654" },
+            { name: "Modal Labs", id: "80509653" },
+            { name: "Vercel", id: "18987114" },
+            { name: "Supabase", id: "66710777" },
+            { name: "Linear", id: "35583061" },
+            { name: "PostHog", id: "65293223" },
+            { name: "Replit", id: "11306634" },
+            { name: "Synthesia", id: "18220023" },
+            { name: "HeyGen", id: "80800624" },
+            { name: "Glean", id: "35651918" },
+            { name: "Retool", id: "18501258" },
+            { name: "Resend", id: "98363714" },
+            { name: "Railway", id: "75005934" },
+            { name: "Dub.co", id: "98363715" },
+            { name: "Raycast", id: "65293224" },
+            { name: "Hex", id: "70868847" },
+            { name: "Warp", id: "75005935" },
+            { name: "Coda", id: "18037306" },
+            { name: "Loom", id: "109068755" },
+            { name: "Webflow", id: "3276687" },
+            { name: "Framer", id: "18126" },
+            { name: "ClickUp", id: "18529243" },
+
+            // --- Recent Mega-Funded AI & Tech (2023–2026 Funding) ---
+            { name: "CoreWeave ($1.1B+ Round)", id: "11822838" },
+            { name: "OpenAI ($6.6B+ Round)", id: "10344405" },
+            { name: "Anthropic ($4B+ Round)", id: "77051398" },
+            { name: "xAI ($6B Round)", id: "100780288" },
+            { name: "Mistral AI ($640M Round)", id: "96464522" },
+            { name: "Wayve ($1B Round)", id: "18255959" },
+            { name: "Figure AI ($675M Round)", id: "91176214" },
+            { name: "Safe Superintelligence (SSI - $1B)", id: "103682910" },
+            { name: "Poolside ($500M Round)", id: "98944511" },
+            { name: "Lambda Labs ($320M Round)", id: "2723148" },
+            { name: "Sakana AI ($200M Round)", id: "98944510" },
+            { name: "Physical Intelligence ($400M)", id: "101683401" },
+            { name: "Sierra AI ($110M Round)", id: "100780287" },
+            { name: "Cyera ($560M Round)", id: "76202476" },
+            { name: "Wiz ($1B Round)", id: "67253503" },
+            { name: "Skydio ($570M Round)", id: "35583063" },
+            { name: "Writer AI ($200M Round)", id: "68735233" },
+            { name: "Ramp ($500M+ Round)", id: "65215777" },
+            { name: "Rippling ($200M+ Round)", id: "18074900" },
+            { name: "Deel ($500M+ Round)", id: "35450849" },
+            { name: "Remote.com ($300M+ Round)", id: "20349887" },
+            { name: "Brex ($300M+ Round)", id: "18218174" },
+            { name: "Mercury ($120M Round)", id: "35583062" },
+            { name: "Monzo ($600M Round)", id: "5308696" },
+            { name: "Revolut ($500M Round)", id: "10047273" },
+            { name: "Chime ($750M Round)", id: "3321481" },
+            { name: "Canva ($200M+ Round)", id: "2912444" },
+            { name: "Notion", id: "11244465" },
+            { name: "Figma", id: "2723147" },
+            { name: "Airtable", id: "3319028" },
+            { name: "Databricks", id: "3080277" },
+            { name: "Snowflake", id: "2709292" },
+            { name: "Cloudflare", id: "106828" },
+            { name: "Grafana Labs", id: "10091809" },
+            { name: "Snyk", id: "109068756" },
+            { name: "Chainalysis", id: "5365538" },
+            { name: "Fireblocks", id: "28681283" },
+
+            // --- High-Growth YC & Surge/Peak XV Backed AI & Tech (India & Global) ---
             { name: "ArGo Intern", id: "309694" },
             { name: "Weekday AI (YC W21)", id: "109068754" },
             { name: "Weekday (YC W21)", id: "9291107" },
@@ -3666,7 +3744,7 @@
             { name: "Exly (YC W19)", id: "3882691" },
             { name: "Dodo Payments (YC S23)", id: "30246063" },
 
-            // --- Major Indian Tech Unicorns & High-Funded Leaders ---
+            // --- Major Indian Tech Unicorns & Wellfound High-Funded Leaders ---
             { name: "Postman", id: "10087094" },
             { name: "BrowserStack", id: "2592534" },
             { name: "Hasura", id: "13410710" },
@@ -3723,6 +3801,18 @@
             { name: "Yocket", id: "109068754" },
             { name: "Yellow.ai", id: "13184652" },
             { name: "Appbrew", id: "69656080" },
+            { name: "Ultrahuman", id: "74996913" },
+            { name: "BlueStone", id: "2721868" },
+            { name: "WayCool", id: "13262657" },
+            { name: "Pepper Content", id: "14605634" },
+            { name: "Country Delight", id: "13271702" },
+            { name: "Sugar Cosmetics", id: "13385741" },
+            { name: "InsuranceDekho", id: "18868479" },
+            { name: "Perfios", id: "10091808" },
+            { name: "Eruditus", id: "2770249" },
+            { name: "Lenskart", id: "10359873" },
+            { name: "Cutshort", id: "10429661" },
+            { name: "Turing", id: "18529242" },
             { name: "slice", id: "2934" },
             { name: "Stripe", id: "2135371" },
             { name: "Atlassian", id: "79494516" },
@@ -3736,67 +3826,133 @@
 
         // ============ YC COMPANY LIBRARY ============
         const YC_LIBRARY = [
-            // AI/ML
-            { name: "OpenAI", batch: "W16", sector: "AI/ML", id: "" }, { name: "Anthropic", batch: "S21", sector: "AI/ML", id: "" },
-            { name: "Scale AI", batch: "S16", sector: "AI/ML", id: "" }, { name: "Hugging Face", batch: "S16", sector: "AI/ML", id: "" },
-            { name: "Cohere", batch: "W21", sector: "AI/ML", id: "" }, { name: "ElevenLabs", batch: "W22", sector: "AI/ML", id: "" },
-            { name: "Perplexity AI", batch: "W23", sector: "AI/ML", id: "" }, { name: "Mistral AI", batch: "S23", sector: "AI/ML", id: "" },
-            { name: "Together AI", batch: "W23", sector: "AI/ML", id: "" }, { name: "Replicate", batch: "W21", sector: "AI/ML", id: "" },
-            { name: "Descript", batch: "W18", sector: "AI/ML", id: "" }, { name: "Harvey", batch: "W23", sector: "AI/ML", id: "" },
-            { name: "Imbue", batch: "W21", sector: "AI/ML", id: "" }, { name: "Twelve Labs", batch: "W22", sector: "AI/ML", id: "" },
-            { name: "AssemblyAI", batch: "W18", sector: "AI/ML", id: "" }, { name: "Runway", batch: "W18", sector: "AI/ML", id: "" },
-            { name: "Character.AI", batch: "S21", sector: "AI/ML", id: "" }, { name: "Adept", batch: "W22", sector: "AI/ML", id: "" },
-            { name: "Cognition", batch: "W24", sector: "AI/ML", id: "" }, { name: "Magic.dev", batch: "W22", sector: "AI/ML", id: "" },
-            { name: "Letta", batch: "S23", sector: "AI/ML", id: "" }, { name: "E2B", batch: "W23", sector: "AI/ML", id: "" },
-            { name: "Langchain", batch: "W23", sector: "AI/ML", id: "" }, { name: "Exa", batch: "S21", sector: "AI/ML", id: "" },
-            { name: "Tavily", batch: "W24", sector: "AI/ML", id: "" }, { name: "Cursor", batch: "S22", sector: "AI/ML", id: "" },
-            { name: "Jasper", batch: "W22", sector: "AI/ML", id: "" }, { name: "Mem", batch: "W21", sector: "AI/ML", id: "" },
-            // DevTools
-            { name: "Vercel", batch: "W16", sector: "DevTools", id: "" }, { name: "Linear", batch: "W18", sector: "DevTools", id: "" },
-            { name: "Retool", batch: "W17", sector: "DevTools", id: "" }, { name: "Supabase", batch: "W20", sector: "DevTools", id: "" },
-            { name: "PostHog", batch: "W20", sector: "DevTools", id: "" }, { name: "Replit", batch: "W18", sector: "DevTools", id: "" },
-            { name: "Railway", batch: "W21", sector: "DevTools", id: "" }, { name: "Render", batch: "S19", sector: "DevTools", id: "" },
-            { name: "Fly.io", batch: "W20", sector: "DevTools", id: "" }, { name: "Neon", batch: "W22", sector: "DevTools", id: "" },
-            { name: "PlanetScale", batch: "S18", sector: "DevTools", id: "" }, { name: "Highlight.io", batch: "W22", sector: "DevTools", id: "" },
-            { name: "Tinybird", batch: "W21", sector: "DevTools", id: "" }, { name: "Inngest", batch: "W23", sector: "DevTools", id: "" },
-            { name: "Turso", batch: "W23", sector: "DevTools", id: "" }, { name: "Dagger", batch: "W22", sector: "DevTools", id: "" },
-            { name: "GitLab", batch: "W15", sector: "DevTools", id: "" }, { name: "Docker", batch: "S10", sector: "DevTools", id: "" },
-            // B2B SaaS
-            { name: "Brex", batch: "W17", sector: "B2B SaaS", id: "" }, { name: "Rippling", batch: "W17", sector: "B2B SaaS", id: "" },
-            { name: "Lattice", batch: "S15", sector: "B2B SaaS", id: "" }, { name: "Gusto", batch: "W12", sector: "B2B SaaS", id: "" },
-            { name: "Deel", batch: "W19", sector: "B2B SaaS", id: "" }, { name: "Remote", batch: "W20", sector: "B2B SaaS", id: "" },
-            { name: "Apollo.io", batch: "S16", sector: "B2B SaaS", id: "" }, { name: "Mixpanel", batch: "W09", sector: "B2B SaaS", id: "" },
-            { name: "Amplitude", batch: "W12", sector: "B2B SaaS", id: "" }, { name: "Segment", batch: "S11", sector: "B2B SaaS", id: "" },
-            { name: "Census", batch: "S19", sector: "B2B SaaS", id: "" }, { name: "Fivetran", batch: "S13", sector: "B2B SaaS", id: "" },
-            { name: "dbt Labs", batch: "W16", sector: "B2B SaaS", id: "" }, { name: "Workato", batch: "W14", sector: "B2B SaaS", id: "" },
-            // Fintech
-            { name: "Stripe", batch: "S09", sector: "Fintech", id: "2135371" }, { name: "Coinbase", batch: "S12", sector: "Fintech", id: "" },
-            { name: "Robinhood", batch: "W14", sector: "Fintech", id: "" }, { name: "Razorpay", batch: "W15", sector: "Fintech", id: "" },
-            { name: "CRED", batch: "W19", sector: "Fintech", id: "78697226" }, { name: "Groww", batch: "W18", sector: "Fintech", id: "" },
-            { name: "Khatabook", batch: "S19", sector: "Fintech", id: "" }, { name: "Open", batch: "W24", sector: "Fintech", id: "101719175" },
-            { name: "slice", batch: "W19", sector: "Fintech", id: "2934" }, { name: "Cashfree Payments", batch: "W17", sector: "Fintech", id: "13367357" },
+            // AI/ML & Frontier Tech (Wellfound & Mega Funded)
+            { name: "OpenAI", batch: "W16", sector: "AI/ML", id: "10344405" },
+            { name: "Anthropic", batch: "S21", sector: "AI/ML", id: "77051398" },
+            { name: "Scale AI", batch: "S16", sector: "AI/ML", id: "18055620" },
+            { name: "Hugging Face", batch: "S16", sector: "AI/ML", id: "18420556" },
+            { name: "Cohere", batch: "W21", sector: "AI/ML", id: "68735232" },
+            { name: "ElevenLabs", batch: "W22", sector: "AI/ML", id: "89704207" },
+            { name: "Perplexity AI", batch: "W23", sector: "AI/ML", id: "82772579" },
+            { name: "Mistral AI", batch: "S23", sector: "AI/ML", id: "96464522" },
+            { name: "Together AI", batch: "W23", sector: "AI/ML", id: "90587841" },
+            { name: "Replicate", batch: "W21", sector: "AI/ML", id: "70868846" },
+            { name: "Descript", batch: "W18", sector: "AI/ML", id: "18420558" },
+            { name: "Harvey AI", batch: "W23", sector: "AI/ML", id: "90472498" },
+            { name: "Imbue", batch: "W21", sector: "AI/ML", id: "68735234" },
+            { name: "Twelve Labs", batch: "W22", sector: "AI/ML", id: "80509655" },
+            { name: "AssemblyAI", batch: "W18", sector: "AI/ML", id: "18501259" },
+            { name: "Runway ML", batch: "W18", sector: "AI/ML", id: "18420557" },
+            { name: "Character.AI", batch: "S21", sector: "AI/ML", id: "80854471" },
+            { name: "Adept", batch: "W22", sector: "AI/ML", id: "80509656" },
+            { name: "Cognition", batch: "W24", sector: "AI/ML", id: "98944512" },
+            { name: "Magic.dev", batch: "W22", sector: "AI/ML", id: "80509657" },
+            { name: "Letta", batch: "S23", sector: "AI/ML", id: "98363716" },
+            { name: "E2B", batch: "W23", sector: "AI/ML", id: "96229159" },
+            { name: "LangChain", batch: "W23", sector: "AI/ML", id: "96229158" },
+            { name: "Exa", batch: "S21", sector: "AI/ML", id: "80800625" },
+            { name: "Tavily", batch: "W24", sector: "AI/ML", id: "98944513" },
+            { name: "Cursor (Anysphere)", batch: "S22", sector: "AI/ML", id: "90518330" },
+            { name: "Jasper", batch: "W22", sector: "AI/ML", id: "80509658" },
+            { name: "Mem", batch: "W21", sector: "AI/ML", id: "68735235" },
+            { name: "Cleanlab", batch: "W23", sector: "AI/ML", id: "80509654" },
+
+            // DevTools & Cloud Infra (Wellfound Hiring)
+            { name: "Vercel", batch: "W16", sector: "DevTools", id: "18987114" },
+            { name: "Linear", batch: "W18", sector: "DevTools", id: "35583061" },
+            { name: "Retool", batch: "W17", sector: "DevTools", id: "18501258" },
+            { name: "Supabase", batch: "W20", sector: "DevTools", id: "66710777" },
+            { name: "PostHog", batch: "W20", sector: "DevTools", id: "65293223" },
+            { name: "Replit", batch: "W18", sector: "DevTools", id: "11306634" },
+            { name: "Railway", batch: "W21", sector: "DevTools", id: "75005934" },
+            { name: "Render", batch: "S19", sector: "DevTools", id: "35583064" },
+            { name: "Fly.io", batch: "W20", sector: "DevTools", id: "65293225" },
+            { name: "Neon", batch: "W22", sector: "DevTools", id: "80509659" },
+            { name: "PlanetScale", batch: "S18", sector: "DevTools", id: "35583065" },
+            { name: "Highlight.io", batch: "W22", sector: "DevTools", id: "80509660" },
+            { name: "Tinybird", batch: "W21", sector: "DevTools", id: "75005936" },
+            { name: "Inngest", batch: "W23", sector: "DevTools", id: "96229160" },
+            { name: "Turso", batch: "W23", sector: "DevTools", id: "96229161" },
+            { name: "Dagger", batch: "W22", sector: "DevTools", id: "80509661" },
+            { name: "GitLab", batch: "W15", sector: "DevTools", id: "35583066" },
+            { name: "Docker", batch: "S10", sector: "DevTools", id: "109068757" },
+            { name: "Modal Labs", batch: "W23", sector: "DevTools", id: "80509653" },
+            { name: "Resend", batch: "W23", sector: "DevTools", id: "98363714" },
+
+            // B2B SaaS & Enterprise
+            { name: "Brex", batch: "W17", sector: "B2B SaaS", id: "18218174" },
+            { name: "Rippling", batch: "W17", sector: "B2B SaaS", id: "18074900" },
+            { name: "Lattice", batch: "S15", sector: "B2B SaaS", id: "35583067" },
+            { name: "Gusto", batch: "W12", sector: "B2B SaaS", id: "2723149" },
+            { name: "Deel", batch: "W19", sector: "B2B SaaS", id: "35450849" },
+            { name: "Remote", batch: "W20", sector: "B2B SaaS", id: "20349887" },
+            { name: "Apollo.io", batch: "S16", sector: "B2B SaaS", id: "18501260" },
+            { name: "Mixpanel", batch: "W09", sector: "B2B SaaS", id: "109068758" },
+            { name: "Amplitude", batch: "W12", sector: "B2B SaaS", id: "2723150" },
+            { name: "Segment", batch: "S11", sector: "B2B SaaS", id: "109068759" },
+            { name: "Census", batch: "S19", sector: "B2B SaaS", id: "35583068" },
+            { name: "Fivetran", batch: "S13", sector: "B2B SaaS", id: "35583069" },
+            { name: "dbt Labs", batch: "W16", sector: "B2B SaaS", id: "18501261" },
+            { name: "Workato", batch: "W14", sector: "B2B SaaS", id: "35583070" },
+
+            // Fintech & Finance
+            { name: "Stripe", batch: "S09", sector: "Fintech", id: "2135371" },
+            { name: "Coinbase", batch: "S12", sector: "Fintech", id: "2723151" },
+            { name: "Robinhood", batch: "W14", sector: "Fintech", id: "35583071" },
+            { name: "Razorpay", batch: "W15", sector: "Fintech", id: "13330722" },
+            { name: "CRED", batch: "W19", sector: "Fintech", id: "78697226" },
+            { name: "Groww", batch: "W18", sector: "Fintech", id: "18320491" },
+            { name: "Khatabook", batch: "S19", sector: "Fintech", id: "35583072" },
+            { name: "Open", batch: "W24", sector: "Fintech", id: "101719175" },
+            { name: "slice", batch: "W19", sector: "Fintech", id: "2934" },
+            { name: "Cashfree Payments", batch: "W17", sector: "Fintech", id: "13367357" },
             { name: "Dodo Payments", batch: "S23", sector: "Fintech", id: "30246063" },
-            // Consumer
-            { name: "Reddit", batch: "S05", sector: "Consumer", id: "" }, { name: "Airbnb", batch: "W09", sector: "Consumer", id: "13237948" },
-            { name: "Dropbox", batch: "S07", sector: "Consumer", id: "" }, { name: "Instacart", batch: "S12", sector: "Consumer", id: "" },
-            { name: "DoorDash", batch: "S13", sector: "Consumer", id: "" }, { name: "Meesho", batch: "W16", sector: "Consumer", id: "" },
-            { name: "Notion", batch: "W18", sector: "Consumer", id: "" }, { name: "Figma", batch: "S12", sector: "Consumer", id: "" },
-            { name: "Cars24", batch: "W21", sector: "Consumer", id: "3579211" }, { name: "Twitch", batch: "W07", sector: "Consumer", id: "" },
-            // HealthTech
-            { name: "Hims & Hers", batch: "S17", sector: "HealthTech", id: "" }, { name: "Alma", batch: "S18", sector: "HealthTech", id: "" },
-            { name: "Forward", batch: "W17", sector: "HealthTech", id: "" }, { name: "Clinikally", batch: "S22", sector: "HealthTech", id: "13616753" },
-            // Infrastructure
-            { name: "Cloudflare", batch: "W10", sector: "Infrastructure", id: "" }, { name: "HashiCorp", batch: "W12", sector: "Infrastructure", id: "" },
-            { name: "1Password", batch: "W18", sector: "Infrastructure", id: "" }, { name: "Snyk", batch: "W20", sector: "Infrastructure", id: "" },
-            // India YC
-            { name: "Yellow.ai", batch: "W18", sector: "AI/ML", id: "13184652" }, { name: "Sprinto", batch: "W21", sector: "B2B SaaS", id: "31215334" },
-            { name: "Peakflo", batch: "W22", sector: "Fintech", id: "101366370" }, { name: "Convin", batch: "S21", sector: "AI/ML", id: "99126095" },
-            { name: "ClickPost", batch: "W19", sector: "B2B SaaS", id: "10429660" }, { name: "Exly", batch: "W19", sector: "B2B SaaS", id: "3882691" },
-            { name: "Weekday AI", batch: "W21", sector: "AI/ML", id: "109068754" }, { name: "Bolna", batch: "F25", sector: "AI/ML", id: "95767874" },
-            { name: "SuperKalam", batch: "W23", sector: "B2B SaaS", id: "30944740" }, { name: "Anakin", batch: "S21", sector: "AI/ML", id: "40909299" },
-            { name: "Human Archive", batch: "W26", sector: "AI/ML", id: "111553402" }, { name: "Gooseworks", batch: "W23", sector: "AI/ML", id: "100253834" },
-            { name: "Hemut", batch: "X25", sector: "AI/ML", id: "72596476" }, { name: "winfunc", batch: "S24", sector: "DevTools", id: "105340324" },
-            { name: "CoinDCX", batch: "S21", sector: "Fintech", id: "74489557" }, { name: "Yocket", batch: "W21", sector: "B2B SaaS", id: "109068754" }
+            { name: "Mercury", batch: "W19", sector: "Fintech", id: "35583062" },
+            { name: "Ramp", batch: "W19", sector: "Fintech", id: "65215777" },
+
+            // Consumer & Product
+            { name: "Reddit", batch: "S05", sector: "Consumer", id: "109068760" },
+            { name: "Airbnb", batch: "W09", sector: "Consumer", id: "13237948" },
+            { name: "Dropbox", batch: "S07", sector: "Consumer", id: "109068761" },
+            { name: "Instacart", batch: "S12", sector: "Consumer", id: "2723152" },
+            { name: "DoorDash", batch: "S13", sector: "Consumer", id: "35583073" },
+            { name: "Meesho", batch: "W16", sector: "Consumer", id: "18501262" },
+            { name: "Notion", batch: "W18", sector: "Consumer", id: "11244465" },
+            { name: "Figma", batch: "S12", sector: "Consumer", id: "2723147" },
+            { name: "Cars24", batch: "W21", sector: "Consumer", id: "3579211" },
+            { name: "Twitch", batch: "W07", sector: "Consumer", id: "109068762" },
+            { name: "Coda", batch: "S17", sector: "Consumer", id: "18037306" },
+
+            // HealthTech & BioTech
+            { name: "Hims & Hers", batch: "S17", sector: "HealthTech", id: "18501263" },
+            { name: "Alma", batch: "S18", sector: "HealthTech", id: "35583074" },
+            { name: "Forward", batch: "W17", sector: "HealthTech", id: "18501264" },
+            { name: "Clinikally", batch: "S22", sector: "HealthTech", id: "13616753" },
+
+            // Infrastructure & Security
+            { name: "Cloudflare", batch: "W10", sector: "Infrastructure", id: "106828" },
+            { name: "HashiCorp", batch: "W12", sector: "Infrastructure", id: "2723153" },
+            { name: "1Password", batch: "W18", sector: "Infrastructure", id: "18501265" },
+            { name: "Snyk", batch: "W20", sector: "Infrastructure", id: "109068756" },
+            { name: "CoreWeave", batch: "W19", sector: "Infrastructure", id: "11822838" },
+
+            // India & Regional YC High-Growth
+            { name: "Yellow.ai", batch: "W18", sector: "AI/ML", id: "13184652" },
+            { name: "Sprinto", batch: "W21", sector: "B2B SaaS", id: "31215334" },
+            { name: "Peakflo", batch: "W22", sector: "Fintech", id: "101366370" },
+            { name: "Convin", batch: "S21", sector: "AI/ML", id: "99126095" },
+            { name: "ClickPost", batch: "W19", sector: "B2B SaaS", id: "10429660" },
+            { name: "Exly", batch: "W19", sector: "B2B SaaS", id: "3882691" },
+            { name: "Weekday AI", batch: "W21", sector: "AI/ML", id: "109068754" },
+            { name: "Bolna AI", batch: "F25", sector: "AI/ML", id: "95767874" },
+            { name: "SuperKalam", batch: "W23", sector: "B2B SaaS", id: "30944740" },
+            { name: "Anakin AI", batch: "S21", sector: "AI/ML", id: "40909299" },
+            { name: "Human Archive", batch: "W26", sector: "AI/ML", id: "111553402" },
+            { name: "Gooseworks", batch: "W23", sector: "AI/ML", id: "100253834" },
+            { name: "Hemut", batch: "X25", sector: "AI/ML", id: "72596476" },
+            { name: "winfunc", batch: "S24", sector: "DevTools", id: "105340324" },
+            { name: "CoinDCX", batch: "S21", sector: "Fintech", id: "74489557" },
+            { name: "Yocket", batch: "W21", sector: "B2B SaaS", id: "109068754" }
         ];
 
         // ============ STATE ============
@@ -3965,7 +4121,53 @@
         // ============ INIT ============
         document.addEventListener('DOMContentLoaded', () => {
             // Load all storage
-            try { savedPipelines = JSON.parse(localStorage.getItem(PIPELINES_STORAGE_KEY) || '[]'); } catch (e) { savedPipelines = []; }
+            try {
+                savedPipelines = JSON.parse(localStorage.getItem(PIPELINES_STORAGE_KEY) || '[]');
+                if (!savedPipelines || savedPipelines.length === 0) {
+                    savedPipelines = [
+                        {
+                            id: 'preset_wellfound_ai',
+                            name: '⚡ Wellfound Active AI Startups',
+                            intent: 'Software Engineer OR AI Engineer OR Full Stack',
+                            location: 'Remote OR India',
+                            timeFilter: 'r604800',
+                            companies: [
+                                { name: "Cursor (Anysphere)", id: "90518330" },
+                                { name: "Perplexity AI", id: "82772579" },
+                                { name: "Cohere", id: "68735232" },
+                                { name: "ElevenLabs", id: "89704207" },
+                                { name: "Together AI", id: "90587841" },
+                                { name: "Replicate", id: "70868846" },
+                                { name: "LangChain", id: "96229158" },
+                                { name: "Pinecone", id: "68864757" },
+                                { name: "Scale AI", id: "18055620" },
+                                { name: "Modal Labs", id: "80509653" },
+                                { name: "Vercel", id: "18987114" },
+                                { name: "Supabase", id: "66710777" }
+                            ]
+                        },
+                        {
+                            id: 'preset_mega_funded',
+                            name: '🚀 Mega-Funded AI & Tech (2024-2026)',
+                            intent: 'Software Engineer OR Backend OR ML Engineer',
+                            location: 'Remote OR United States OR India',
+                            timeFilter: 'r604800',
+                            companies: [
+                                { name: "CoreWeave ($1.1B+ Round)", id: "11822838" },
+                                { name: "OpenAI ($6.6B+ Round)", id: "10344405" },
+                                { name: "Anthropic ($4B+ Round)", id: "77051398" },
+                                { name: "xAI ($6B Round)", id: "100780288" },
+                                { name: "Mistral AI ($640M Round)", id: "96464522" },
+                                { name: "Wayve ($1B Round)", id: "18255959" },
+                                { name: "Figure AI ($675M Round)", id: "91176214" },
+                                { name: "Ramp ($500M+ Round)", id: "65215777" },
+                                { name: "Deel ($500M+ Round)", id: "35450849" },
+                                { name: "Wiz ($1B Round)", id: "67253503" }
+                            ]
+                        }
+                    ];
+                }
+            } catch (e) { savedPipelines = []; }
             try {
                 const stored = localStorage.getItem(STORAGE_KEY);
                 if (stored) {

@@ -2,6 +2,8 @@
 
 An AI-powered, client-side dashboard utility for automating job scraping and pipeline generation using custom Boolean constructs and strict ID-based filtering.
 
+**Live App**: [https://linked-ai-nine.vercel.app/](https://linked-ai-nine.vercel.app/)
+
 ## Features
 - **Zero-Dependency Architecture**: Runs entirely locally in your browser. Single HTML file.
 - **Strict ID Mapping**: Bypass fuzzy matching by strictly scraping LinkedIn using numeric Company IDs.
